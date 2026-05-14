@@ -39,21 +39,6 @@
     "image": "hero-collage.webp"
   }
   </script>
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  var toggles = document.querySelectorAll('.course-item__toggle');
-  if (toggles.length > 0) {
-    toggles.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var item = this.closest('.course-item');
-        if (!item) return;
-        var expanded = item.classList.toggle('is-expanded');
-        this.setAttribute('aria-expanded', expanded);
-      });
-    });
-  }
-});
-  </script>
   <link rel="stylesheet" href="styles.css">
   <script type="text/javascript" charset="UTF-8" src="a13606b7302b1c9c69b237a591c49d77.js"></script>
 </head>
@@ -180,12 +165,12 @@
         <div class="value-prop__line"></div>
         <div class="value-prop__right">
           <div class="value-prop__video">
-            <div class="video-facade" id="vimeoFacade" role="presentation" tabindex="-1" style="cursor: default;">
+            <div class="video-facade" id="vimeoFacade" data-vimeo-id="824512899">
               <img src="error.webp" alt="Video: Emotionale Freiheit setzt finanzielle Unabhängigkeit voraus" loading="lazy" decoding="async">
-              <button class="video-facade__play" id="vimeoPlayBtn" aria-label="Video abspielen" style="display: none;">
+              <button class="video-facade__play" id="vimeoPlayBtn" aria-label="Video abspielen" style="display: flex;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
               </button>
-              <div class="video-blocked" id="videoBlocked" style="display: flex;">
+              <div class="video-blocked" id="videoBlocked" style="display: none;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 <p>Dieses Video wird von Vimeo bereitgestellt und erfordert deine Cookie-Zustimmung.</p>
                 <button class="video-blocked__btn" onclick="window.CookieScript && window.CookieScript.instance && window.CookieScript.instance.show()">Cookie-Einstellungen öffnen</button>
@@ -551,9 +536,6 @@
       </div>
     </section>
 
-    <!-- Restliche Abschnitte (Vorteile, Testimonials, Kontakt, Footer) sind identisch mit der ursprünglichen Version. -->
-    <!-- Sie können sie aus Ihrem Original übernehmen. Der Einfachheit halber lasse ich sie hier weg, da sie unverändert bleiben. -->
-
     
     <!-- ── KONTAKT ──────────────────────────────────────────────────── -->
     <section class="contact" id="kontakt">
@@ -666,11 +648,8 @@
       </div>
     </div>
 
-  </main> <!-- /#main-content -->
-
   </main>
 
-  <!-- JavaScript (mit zusätzlichem Toggle-Handler) -->
   <script>
     document.getElementById('footerYear').textContent = new Date().getFullYear();
   </script>
@@ -710,16 +689,13 @@
     document.getElementById('closeContactModal').addEventListener('click', () => toggleContactModal(false));
     document.getElementById('contactModalBackdrop').addEventListener('click', () => toggleContactModal(false));
 
-    // Kontakt-Formular (unverändert)
-    // ... (restlicher Formular-Code aus dem Original) ...
+    function resetForm() {
+      document.getElementById('contactForm').reset();
+      document.getElementById('formError').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'none';
+    }
 
-    // Testimonial Slider (unverändert)
-    // ... (Slider-Code) ...
-
-    // Vimeo Facade (unverändert)
-    // ... (Vimeo-Code) ...
-
-    /* NEU: Aufklappbare Kursbeschreibungen */
+    // Ausklappbare Kursbeschreibungen
     document.querySelectorAll('.course-item__toggle').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var item = this.closest('.course-item');
@@ -727,6 +703,32 @@
         this.setAttribute('aria-expanded', expanded);
       });
     });
+
+    // Vimeo Video Facade – Zwei-Klick-Lösung mit dnt=1
+    (function() {
+      var facade = document.getElementById('vimeoFacade');
+      var playBtn = document.getElementById('vimeoPlayBtn');
+      var videoId = facade ? facade.getAttribute('data-vimeo-id') : null;
+
+      if (!facade || !playBtn || !videoId) return;
+
+      playBtn.addEventListener('click', function() {
+        // iframe mit Datenschutz-Einstellungen erstellen
+        var iframe = document.createElement('iframe');
+        iframe.setAttribute('src', 'https://player.vimeo.com/video/' + videoId + '?autoplay=1&dnt=1&title=0&byline=0&portrait=0');
+        iframe.setAttribute('width', '100%');
+        iframe.setAttribute('height', '100%');
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;');
+
+        // Alten Inhalt ersetzen
+        facade.innerHTML = '';
+        facade.appendChild(iframe);
+        facade.style.cursor = 'default';
+      });
+    })();
   </script>
 </body>
 </html>
